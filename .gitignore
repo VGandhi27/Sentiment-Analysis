@@ -1,0 +1,16 @@
+*.pyc
+*.log
+*.xml
+*.iml
+*.csv
+*.xlsx
+*.sqlite3
+*.idea
+*.png
+*.pt
+.venv/
+myenv/
+**/migrations/
+
+dashboard/__init__.py
+.gitattributes
