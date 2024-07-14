@@ -1,18 +1,16 @@
-<!-- dashboard/templates/dashboard/home.html -->
+{% extends 'visualisation/base.html' %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Sentiment Analysis</title>
-</head>
-<body>
-    <h1>Sentiment Analysis</h1>
-    <form method="post">
+{% block dashboard_title %}Sentiment Analysis{% endblock %}
+
+{% block content %}
+<div class="jumbotron text-center">
+    <h1 class="display-4">Sentiment Analysis</h1>
+    <p class="lead">Enter text to analyze its sentiment.</p>
+    <hr class="my-4">
+    <form method="POST" action="" class="form-inline d-flex justify-content-center">
         {% csrf_token %}
-        <label for="user_input">Enter Text:</label>
-        <input type="text" id="user_input" name="user_input" required>
-        <button type="submit">Analyze</button>
+        <input type="text" name="user_input" class="form-control mb-2 mr-sm-2" placeholder="Enter text here" required>
+        <button type="submit" class="btn btn-primary mb-2">Analyze</button>
     </form>
-</body>
-</html>
+</div>
+{% endblock %}

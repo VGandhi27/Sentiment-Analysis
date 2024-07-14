@@ -1,5 +1,3 @@
-# dashboard/views.py
-
 import os
 import pickle
 from django.shortcuts import render
@@ -7,7 +5,12 @@ from django.conf import settings
 
 # Load the model
 MODEL_PATH = os.path.join(os.path.dirname(__file__), 'machinelearning/sentiment_model_naive_bayes.pkl')
+MODEL_PATH_lr = os.path.join(os.path.dirname(__file__), 'machinelearning/sentiment_model_lr.pkl')
+
 with open(MODEL_PATH, 'rb') as model_file:
+    naive_bayes_model = pickle.load(model_file)
+
+with open(MODEL_PATH_lr, 'rb') as model_file:
     lr_model = pickle.load(model_file)
 
 def predict_sentiment(text, model):
@@ -16,14 +19,32 @@ def predict_sentiment(text, model):
     probability = model.predict_proba([text])[0]
     return prediction, probability
 
+# def sentiment_analysis_view(request):
+#     if request.method == 'POST':
+#         user_input = request.POST.get('user_input', '')  # Use get() to safely retrieve POST data
+#         prediction, probability = predict_sentiment(user_input, naive_bayes_model)
+#         context = {
+#             'user_input': user_input,
+#             'prediction': prediction,
+#             'probability': probability,
+#         }
+#         return render(request, 'visualisation/result.html', context)
+#     return render(request, 'visualisation/home.html')
+
+
 def sentiment_analysis_view(request):
     if request.method == 'POST':
-        user_input = request.POST.get('user_input', '')  # Use get() to safely retrieve POST data
-        prediction, probability = predict_sentiment(user_input, lr_model)
+        user_input = request.POST.get('user_input', '')
+        
+        nb_prediction, nb_probability = predict_sentiment(user_input, naive_bayes_model)
+        lr_prediction, lr_probability = predict_sentiment(user_input, lr_model)
+        
         context = {
             'user_input': user_input,
-            'prediction': prediction,
-            'probability': probability,
+            'nb_prediction': nb_prediction * 100,
+            'nb_probability': nb_probability * 100,
+            'lr_prediction': lr_prediction * 100,
+            'lr_probability': lr_probability * 100,
         }
         return render(request, 'visualisation/result.html', context)
     return render(request, 'visualisation/home.html')

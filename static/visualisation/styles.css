@@ -1,0 +1,17 @@
+/* static/css/styles.css */
+body {
+    background-color: #f8f9fa;
+}
+
+.jumbotron {
+    background-color: #e9ecef;
+    padding: 2rem 2rem;
+}
+
+.card {
+    margin-top: 2rem;
+}
+
+.navbar {
+    margin-bottom: 2rem;
+}
