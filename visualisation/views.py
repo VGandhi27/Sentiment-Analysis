@@ -2,6 +2,9 @@ import os
 import pickle
 from django.shortcuts import render
 from django.conf import settings
+from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
+
 
 # Load the model
 MODEL_PATH = os.path.join(os.path.dirname(__file__), 'machinelearning/sentiment_model_naive_bayes.pkl')
@@ -19,32 +22,23 @@ def predict_sentiment(text, model):
     probability = model.predict_proba([text])[0]
     return prediction, probability
 
-# def sentiment_analysis_view(request):
-#     if request.method == 'POST':
-#         user_input = request.POST.get('user_input', '')  # Use get() to safely retrieve POST data
-#         prediction, probability = predict_sentiment(user_input, naive_bayes_model)
-#         context = {
-#             'user_input': user_input,
-#             'prediction': prediction,
-#             'probability': probability,
-#         }
-#         return render(request, 'visualisation/result.html', context)
-#     return render(request, 'visualisation/home.html')
-
 
 def sentiment_analysis_view(request):
+    context={}
     if request.method == 'POST':
         user_input = request.POST.get('user_input', '')
-        
+        print(f'user_input--{user_input}')
+        # Assuming predict_sentiment returns predictions and probabilities
         nb_prediction, nb_probability = predict_sentiment(user_input, naive_bayes_model)
         lr_prediction, lr_probability = predict_sentiment(user_input, lr_model)
         
         context = {
             'user_input': user_input,
-            'nb_prediction': nb_prediction * 100,
-            'nb_probability': nb_probability * 100,
-            'lr_prediction': lr_prediction * 100,
-            'lr_probability': lr_probability * 100,
+            'nb_prediction': nb_prediction * 100,  # Scale to percentage
+            'nb_probability': nb_probability * 100,  # Scale to percentage
+            'lr_prediction': lr_prediction * 100,  # Scale to percentage
+            'lr_probability': lr_probability * 100,  # Scale to percentage
         }
-        return render(request, 'visualisation/result.html', context)
-    return render(request, 'visualisation/home.html')
+
+    print(f'context--{context}')
+    return render(request, 'visualisation/home.html',context)

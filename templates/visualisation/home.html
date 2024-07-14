@@ -1,16 +1,141 @@
 {% extends 'visualisation/base.html' %}
 
-{% block dashboard_title %}Sentiment Analysis{% endblock %}
+{% block dashboard_title %}Sentiment Analysis Dashboard{% endblock %}
+
+{% block extra_head %}
+    <!-- Include Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
 
 {% block content %}
-<div class="jumbotron text-center">
-    <h1 class="display-4">Sentiment Analysis</h1>
-    <p class="lead">Enter text to analyze its sentiment.</p>
-    <hr class="my-4">
-    <form method="POST" action="" class="form-inline d-flex justify-content-center">
-        {% csrf_token %}
-        <input type="text" name="user_input" class="form-control mb-2 mr-sm-2" placeholder="Enter text here" required>
-        <button type="submit" class="btn btn-primary mb-2">Analyze</button>
-    </form>
+<div class="container-fluid">
+    <div class="jumbotron text-center">
+        <h1 class="display-4">Sentiment Analysis</h1>
+        <p class="lead">Enter text to analyze its sentiment.</p>
+        <hr class="my-4">
+        <form method="POST" action="" class="form-inline d-flex justify-content-center">
+            {% csrf_token %}
+            <input type="text" name="user_input" class="form-control mb-2 mr-sm-2" placeholder="Enter text here" required>
+            <button type="submit" class="btn btn-primary mb-2">Analyze</button>
+        </form>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Naive Bayes Model Prediction</h5>
+                    <canvas id="nbChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Logistic Regression Model Prediction</h5>
+                    <canvas id="lrChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var nbChartCtx = document.getElementById('nbChart').getContext('2d');
+    var lrChartCtx = document.getElementById('lrChart').getContext('2d');
+
+    // Function to update Naive Bayes Chart
+    function updateNbChart(nbPrediction) {
+        var nbChart = new Chart(nbChartCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Positive', 'Negative'],
+                datasets: [{
+                    label: 'Prediction Percentage',
+                    data: [nbPrediction, 100 - nbPrediction],
+                    backgroundColor: ['#4CAF50', '#FF5722'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Function to update Logistic Regression Chart
+    function updateLrChart(lrPrediction) {
+        var lrChart = new Chart(lrChartCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Positive', 'Negative'],
+                datasets: [{
+                    label: 'Prediction Percentage',
+                    data: [lrPrediction, 100 - lrPrediction],
+                    backgroundColor: ['#4CAF50', '#FF5722'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Handle form submission
+    document.querySelector('form').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent default form submission
+
+        var formData = new FormData(this); // Create FormData object
+        console.log("formData--", formData);
+
+        fetch('', { // Send POST request to current URL (Django view)
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}' // Ensure CSRF token is included
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log("data--", data);
+            // Update charts with new prediction data
+            updateNbChart(data.nb_prediction);
+            updateLrChart(data.lr_prediction);
+        })
+        .catch(error => console.error('Error:', error));
+    });
+});
+</script>
+
+
 {% endblock %}
