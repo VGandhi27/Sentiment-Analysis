@@ -1,6 +1,8 @@
+# dashboard/urls.py
+
 from django.urls import path
-from visualisation import views
+from . import views
 
 urlpatterns = [
-    path("", views.home, name="home"),
+    path('', views.sentiment_analysis_view, name='sentiment_analysis'),
 ]

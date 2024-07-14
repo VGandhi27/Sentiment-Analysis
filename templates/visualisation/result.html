@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sentiment Analysis Result</title>
+</head>
+<body>
+    <h1>Sentiment Analysis Result</h1>
+    <p><strong>Input Text:</strong> {{ user_input }}</p>
+    <p><strong>Prediction:</strong> {{ prediction }}</p>
+    <p><strong>Probability:</strong> {{ probability }}</p>
+    <a href="{% url 'sentiment_analysis' %}">Back</a>
+</body>
+</html>
