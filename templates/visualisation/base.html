@@ -31,12 +31,12 @@
         .dashboard-icons i {
             font-size: 2.5rem;
             margin: 0 10px;
-            color: #4CAF50; /* Green color for icons */
+            color: #4CAF50;
             transition: transform 0.3s ease-in-out;
         }
         .dashboard-icons i:hover {
             transform: scale(1.2);
-            color: #45A049; /* Darker green on hover */
+            color: #45A049;
         }
     </style>
     {% block extra_css %}{% endblock %}
@@ -56,9 +56,7 @@
     </div>
 
     <script src="https://kit.fontawesome.com/a076d05399.js"></script>
-    <!-- Include Chart.js library -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>
