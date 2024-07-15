@@ -6,168 +6,54 @@
     <title>Sentiment Analysis Dashboard</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
-        body {
-            background-color: #f5f5f5;
-            font-family: Arial, sans-serif;
-        }
-        .container {
-            max-width: 800px;
-            margin: 50px auto;
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
-        }
-        .dashboard-title {
-            text-align: center;
-            font-size: 2rem;
-            margin-bottom: 30px;
-        }
-        .dashboard-icons {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-        .dashboard-icons i {
-            font-size: 2.5rem;
-            margin: 0 10px;
-            color: #4CAF50; /* Green color for icons */
-            transition: transform 0.3s ease-in-out;
-        }
-        .dashboard-icons i:hover {
-            transform: scale(1.2);
-            color: #45A049; /* Darker green on hover */
-        }
-        .chart-container {
-            max-width: 250px; /* Adjust as needed */
-            margin: auto;
-        }
+        /* Your custom CSS styles here */
     </style>
 </head>
 <body>
     <div class="container">
         <h1 class="dashboard-title">Sentiment Analysis Dashboard</h1>
         <div class="dashboard-icons">
-            <i class="fas fa-chart-line"></i>
-            <i class="far fa-chart-bar"></i>
-            <i class="fas fa-chart-pie"></i>
-            <i class="far fa-smile"></i>
-            <i class="far fa-frown"></i>
+            <!-- Add icons if needed -->
         </div>
         <div class="container-fluid">
             <div class="jumbotron text-center">
                 <h1 class="display-4">Sentiment Analysis</h1>
                 <p class="lead">Enter text to analyze its sentiment.</p>
                 <hr class="my-4">
-                <form method="POST" action="" class="form-inline d-flex justify-content-center">
-                    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                <form id="sentiment-form" class="form-inline d-flex justify-content-center">
+                    {% csrf_token %}
                     <input type="text" name="user_input" class="form-control mb-2 mr-sm-2" placeholder="Enter text here" required>
                     <button type="submit" class="btn btn-primary mb-2">Analyze</button>
                 </form>
             </div>
-            <div class="row">
-                <div class="col-lg-6">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">Naive Bayes Model Prediction</h5>
-                            <div class="chart-container">
-                                <canvas id="nbChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
+             <div id="overall-sentiment" class="row mt-5">
+        <div class="col-md-6 offset-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title text-center">Overall Sentiment</h5>
+                    <canvas id="overallSentimentChart" style="max-height: 250px;"></canvas>
                 </div>
-                <div class="col-lg-6">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">Logistic Regression Model Prediction</h5>
-                            <div class="chart-container">
-                                <canvas id="lrChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            </div>
+        </div>
+    </div>
+            <div id="results-container" class="row">
+                <!-- Display results dynamically here -->
             </div>
         </div>
     </div>
 
     <script src="https://kit.fontawesome.com/a076d05399.js"></script>
-    <!-- Include Chart.js library -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var nbChartCtx = document.getElementById('nbChart').getContext('2d');
-        var lrChartCtx = document.getElementById('lrChart').getContext('2d');
+        document.getElementById('sentiment-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            var formData = new FormData(this);
 
-        // Function to update Naive Bayes Chart
-        function updateNbChart(nbProbability) {
-            var nbChart = new Chart(nbChartCtx, {
-                type: 'pie',
-                data: {
-                    labels: ['Positive', 'Negative'],
-                    datasets: [{
-                        label: 'Prediction Percentage',
-                        data: [nbProbability[1], nbProbability[0]],
-                        backgroundColor: ['#4CAF50', '#FF5722'],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return context.label + ': ' + context.raw + '%';
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-        }
-
-        // Function to update Logistic Regression Chart
-        function updateLrChart(lrProbability) {
-            var lrChart = new Chart(lrChartCtx, {
-                type: 'pie',
-                data: {
-                    labels: ['Positive', 'Negative'],
-                    datasets: [{
-                        label: 'Prediction Percentage',
-                        data: [lrProbability[1], lrProbability[0]],
-                        backgroundColor: ['#4CAF50', '#FF5722'],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return context.label + ': ' + context.raw + '%';
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-        }
-
-        // Handle form submission
-        document.querySelector('form').addEventListener('submit', function(event) {
-            event.preventDefault(); // Prevent default form submission
-
-            var formData = new FormData(this); // Create FormData object
-
-            fetch('', { // Send POST request to current URL (Django view)
+            fetch('', {
                 method: 'POST',
                 body: formData,
                 headers: {
-                    'X-CSRFToken': document.querySelector('input[name="csrfmiddlewaretoken"]').value
+                    'X-CSRFToken': '{{ csrf_token }}'
                 }
             })
             .then(response => {
@@ -177,24 +63,240 @@
                 return response.json();
             })
             .then(data => {
-                console.log("data--", data);
-                // Update charts with new prediction data
-                updateNbChart(data.nb_probability);
-                updateLrChart(data.lr_probability);
-
-                // Update overall sentiment display
-                const overallSentiment = `
-                    <div class="alert alert-info text-center">
-                        <h4>Overall Sentiment</h4>
-                        <p>Naive Bayes Model: ${data.nb_sentiment}</p>
-                        <p>Logistic Regression Model: ${data.lr_sentiment}</p>
-                    </div>
-                `;
-                document.querySelector('.jumbotron').insertAdjacentHTML('afterend', overallSentiment);
+                console.log("Received data:", data);
+                displayResults(data);
             })
             .catch(error => console.error('Error:', error));
         });
-    });
+
+        {% comment %} function displayResults(data) {
+            var resultsContainer = document.getElementById('results-container');
+            resultsContainer.innerHTML = '';
+
+            // Iterate over each model in the data
+            for (var modelName in data) {
+                if (data.hasOwnProperty(modelName) && modelName.endsWith('_prediction')) {
+                    var modelPrefix = modelName.replace('_prediction', '');
+                    var sentiment = data[`${modelPrefix}_sentiment`];
+                    var probability = data[modelName][1];  // Assuming probability is in the format [negative, positive]
+
+                    var colDiv = document.createElement('div');
+                    colDiv.className = 'col-lg-6 mb-4';
+
+                    var cardDiv = document.createElement('div');
+                    cardDiv.className = 'card';
+                    colDiv.appendChild(cardDiv);
+
+                    var cardBody = document.createElement('div');
+                    cardBody.className = 'card-body';
+                    cardDiv.appendChild(cardBody);
+
+                    var title = document.createElement('h5');
+                    title.className = 'card-title';
+                    title.textContent = `${modelPrefix.toUpperCase()} Model Prediction`;
+                    cardBody.appendChild(title);
+
+                    var canvas = document.createElement('canvas');
+                    canvas.id = `${modelPrefix}Chart`;
+                    canvas.style.maxHeight = '250px';
+                    cardBody.appendChild(canvas);
+
+                    resultsContainer.appendChild(colDiv);
+
+                    var ctx = canvas.getContext('2d');
+                    var chart = new Chart(ctx, {
+                        type: 'pie',
+                        data: {
+                            labels: ['Positive', 'Negative'],
+                            datasets: [{
+                                label: 'Prediction Percentage',
+                                data: [probability, 100 - probability],
+                                backgroundColor: ['#4CAF50', '#FF5722'],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            return context.label + ': ' + context.raw + '%';
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        } {% endcomment %}
+        {% comment %} function displayResults(data) {
+    var resultsContainer = document.getElementById('results-container');
+    resultsContainer.innerHTML = '';
+
+    // Iterate over each model in the data
+    for (var modelName in data) {
+        if (data.hasOwnProperty(modelName) && modelName.endsWith('_prediction')) {
+            var modelPrefix = modelName.replace('_prediction', '');
+            var sentiment = data[`${modelPrefix}_sentiment`];
+            var probability = data[`${modelPrefix}_probability`][1];  // Extract positive sentiment probability
+
+            var colDiv = document.createElement('div');
+            colDiv.className = 'col-lg-6 mb-4';
+
+            var cardDiv = document.createElement('div');
+            cardDiv.className = 'card';
+            colDiv.appendChild(cardDiv);
+
+            var cardBody = document.createElement('div');
+            cardBody.className = 'card-body';
+            cardDiv.appendChild(cardBody);
+
+            var title = document.createElement('h5');
+            title.className = 'card-title';
+            title.textContent = `${modelPrefix.toUpperCase()} Model Prediction`;
+            cardBody.appendChild(title);
+
+            var canvas = document.createElement('canvas');
+            canvas.id = `${modelPrefix}Chart`;
+            canvas.style.maxHeight = '250px';
+            cardBody.appendChild(canvas);
+
+            resultsContainer.appendChild(colDiv);
+
+            var ctx = canvas.getContext('2d');
+            var chart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Positive', 'Negative'],
+                    datasets: [{
+                        label: 'Prediction Percentage',
+                        data: [probability, 100 - probability],
+                        backgroundColor: ['#4CAF50', '#FF5722'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': ' + context.raw + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    }
+} {% endcomment %}
+
+function displayResults(data) {
+    var resultsContainer = document.getElementById('results-container');
+    resultsContainer.innerHTML = '';
+
+    // Variables to calculate overall sentiment
+    var totalPositive = 0;
+    var totalModels = 0;
+
+    // Iterate over each model in the data
+    for (var modelName in data) {
+        if (data.hasOwnProperty(modelName) && modelName.endsWith('_prediction')) {
+            var modelPrefix = modelName.replace('_prediction', '');
+            var sentiment = data[`${modelPrefix}_sentiment`];
+            var probability = data[`${modelPrefix}_probability`][1];  // Extract positive sentiment probability
+
+            // Display individual model predictions (similar to your existing code)
+            var colDiv = document.createElement('div');
+            colDiv.className = 'col-lg-6 mb-4';
+            var cardDiv = document.createElement('div');
+            cardDiv.className = 'card';
+            colDiv.appendChild(cardDiv);
+            var cardBody = document.createElement('div');
+            cardBody.className = 'card-body';
+            cardDiv.appendChild(cardBody);
+            var title = document.createElement('h5');
+            title.className = 'card-title';
+            title.textContent = `${modelPrefix.toUpperCase()} Model Prediction`;
+            cardBody.appendChild(title);
+            var canvas = document.createElement('canvas');
+            canvas.id = `${modelPrefix}Chart`;
+            canvas.style.maxHeight = '250px';
+            cardBody.appendChild(canvas);
+            resultsContainer.appendChild(colDiv);
+            var ctx = canvas.getContext('2d');
+            var chart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Positive', 'Negative'],
+                    datasets: [{
+                        label: 'Prediction Percentage',
+                        data: [probability, 100 - probability],
+                        backgroundColor: ['#4CAF50', '#FF5722'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': ' + context.raw + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Calculate overall sentiment
+            totalPositive += probability;
+            totalModels++;
+        }
+    }
+
+    // Calculate overall sentiment percentage
+    var overallSentimentPercentage = totalPositive / totalModels;
+
+    // Display overall sentiment in a pie chart
+    var overallSentimentChart = document.getElementById('overallSentimentChart');
+    if (overallSentimentChart) {
+        var ctxOverall = overallSentimentChart.getContext('2d');
+        var overallChart = new Chart(ctxOverall, {
+            type: 'pie',
+            data: {
+                labels: ['Positive', 'Negative'],
+                datasets: [{
+                    label: 'Overall Sentiment',
+                    data: [overallSentimentPercentage, 100 - overallSentimentPercentage],
+                    backgroundColor: ['#4CAF50', '#FF5722'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.label + ': ' + context.raw.toFixed(2) + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+}
+
     </script>
 </body>
 </html>
