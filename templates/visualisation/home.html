@@ -11,7 +11,7 @@
 </head>
 <body>
     <div class="container">
-        <h1 class="dashboard-title">Sentiment Analysis Dashboard</h1>
+        <h1 class="dashboard-title text-center">Sentiment Analysis Dashboard</h1>
         <div class="dashboard-icons">
             <!-- Add icons if needed -->
         </div>
@@ -26,16 +26,17 @@
                     <button type="submit" class="btn btn-primary mb-2">Analyze</button>
                 </form>
             </div>
-             <div id="overall-sentiment" class="row mt-5">
-        <div class="col-md-6 offset-md-3">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title text-center">Overall Sentiment</h5>
-                    <canvas id="overallSentimentChart" style="max-height: 250px;"></canvas>
+            <div id="overall-sentiment" class="row mt-5">
+                <div class="col-md-6 offset-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title text-center">Overall Sentiment</h5>
+                            <h6>Sentiment Analysis:</h6>
+                            <canvas id="overallSentimentChart" style="max-height: 250px;"></canvas>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
             <div id="results-container" class="row">
                 <!-- Display results dynamically here -->
             </div>
@@ -69,40 +70,43 @@
             .catch(error => console.error('Error:', error));
         });
 
-        {% comment %} function displayResults(data) {
+        function displayResults(data) {
             var resultsContainer = document.getElementById('results-container');
             resultsContainer.innerHTML = '';
+
+            // Variables to calculate overall sentiment
+            var totalPositive = 0;
+            var totalModels = 0;
 
             // Iterate over each model in the data
             for (var modelName in data) {
                 if (data.hasOwnProperty(modelName) && modelName.endsWith('_prediction')) {
                     var modelPrefix = modelName.replace('_prediction', '');
                     var sentiment = data[`${modelPrefix}_sentiment`];
-                    var probability = data[modelName][1];  // Assuming probability is in the format [negative, positive]
+                    var probability = data[`${modelPrefix}_probability`][1];  // Extract positive sentiment probability
 
+                    // Display individual model predictions (similar to your existing code)
                     var colDiv = document.createElement('div');
                     colDiv.className = 'col-lg-6 mb-4';
-
                     var cardDiv = document.createElement('div');
                     cardDiv.className = 'card';
                     colDiv.appendChild(cardDiv);
-
                     var cardBody = document.createElement('div');
                     cardBody.className = 'card-body';
                     cardDiv.appendChild(cardBody);
-
                     var title = document.createElement('h5');
                     title.className = 'card-title';
                     title.textContent = `${modelPrefix.toUpperCase()} Model Prediction`;
                     cardBody.appendChild(title);
-
+                    var sentimentText = document.createElement('p');
+                    sentimentText.className = 'card-text';
+                    sentimentText.textContent = `Sentiment: ${sentiment}`;
+                    cardBody.appendChild(sentimentText);
                     var canvas = document.createElement('canvas');
                     canvas.id = `${modelPrefix}Chart`;
                     canvas.style.maxHeight = '250px';
                     cardBody.appendChild(canvas);
-
                     resultsContainer.appendChild(colDiv);
-
                     var ctx = canvas.getContext('2d');
                     var chart = new Chart(ctx, {
                         type: 'pie',
@@ -129,174 +133,47 @@
                             }
                         }
                     });
+
+                    // Calculate overall sentiment
+                    totalPositive += probability;
+                    totalModels++;
                 }
             }
-        } {% endcomment %}
-        {% comment %} function displayResults(data) {
-    var resultsContainer = document.getElementById('results-container');
-    resultsContainer.innerHTML = '';
 
-    // Iterate over each model in the data
-    for (var modelName in data) {
-        if (data.hasOwnProperty(modelName) && modelName.endsWith('_prediction')) {
-            var modelPrefix = modelName.replace('_prediction', '');
-            var sentiment = data[`${modelPrefix}_sentiment`];
-            var probability = data[`${modelPrefix}_probability`][1];  // Extract positive sentiment probability
+            // Calculate overall sentiment percentage
+            var overallSentimentPercentage = totalPositive / totalModels;
 
-            var colDiv = document.createElement('div');
-            colDiv.className = 'col-lg-6 mb-4';
-
-            var cardDiv = document.createElement('div');
-            cardDiv.className = 'card';
-            colDiv.appendChild(cardDiv);
-
-            var cardBody = document.createElement('div');
-            cardBody.className = 'card-body';
-            cardDiv.appendChild(cardBody);
-
-            var title = document.createElement('h5');
-            title.className = 'card-title';
-            title.textContent = `${modelPrefix.toUpperCase()} Model Prediction`;
-            cardBody.appendChild(title);
-
-            var canvas = document.createElement('canvas');
-            canvas.id = `${modelPrefix}Chart`;
-            canvas.style.maxHeight = '250px';
-            cardBody.appendChild(canvas);
-
-            resultsContainer.appendChild(colDiv);
-
-            var ctx = canvas.getContext('2d');
-            var chart = new Chart(ctx, {
-                type: 'pie',
-                data: {
-                    labels: ['Positive', 'Negative'],
-                    datasets: [{
-                        label: 'Prediction Percentage',
-                        data: [probability, 100 - probability],
-                        backgroundColor: ['#4CAF50', '#FF5722'],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return context.label + ': ' + context.raw + '%';
+            // Display overall sentiment in a pie chart
+            var overallSentimentChart = document.getElementById('overallSentimentChart');
+            if (overallSentimentChart) {
+                var ctxOverall = overallSentimentChart.getContext('2d');
+                var overallChart = new Chart(ctxOverall, {
+                    type: 'pie',
+                    data: {
+                        labels: ['Positive', 'Negative'],
+                        datasets: [{
+                            label: 'Overall Sentiment',
+                            data: [overallSentimentPercentage, 100 - overallSentimentPercentage],
+                            backgroundColor: ['#4CAF50', '#FF5722'],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return context.label + ': ' + context.raw.toFixed(2) + '%';
+                                    }
                                 }
                             }
                         }
                     }
-                }
-            });
-        }
-    }
-} {% endcomment %}
-
-function displayResults(data) {
-    var resultsContainer = document.getElementById('results-container');
-    resultsContainer.innerHTML = '';
-
-    // Variables to calculate overall sentiment
-    var totalPositive = 0;
-    var totalModels = 0;
-
-    // Iterate over each model in the data
-    for (var modelName in data) {
-        if (data.hasOwnProperty(modelName) && modelName.endsWith('_prediction')) {
-            var modelPrefix = modelName.replace('_prediction', '');
-            var sentiment = data[`${modelPrefix}_sentiment`];
-            var probability = data[`${modelPrefix}_probability`][1];  // Extract positive sentiment probability
-
-            // Display individual model predictions (similar to your existing code)
-            var colDiv = document.createElement('div');
-            colDiv.className = 'col-lg-6 mb-4';
-            var cardDiv = document.createElement('div');
-            cardDiv.className = 'card';
-            colDiv.appendChild(cardDiv);
-            var cardBody = document.createElement('div');
-            cardBody.className = 'card-body';
-            cardDiv.appendChild(cardBody);
-            var title = document.createElement('h5');
-            title.className = 'card-title';
-            title.textContent = `${modelPrefix.toUpperCase()} Model Prediction`;
-            cardBody.appendChild(title);
-            var canvas = document.createElement('canvas');
-            canvas.id = `${modelPrefix}Chart`;
-            canvas.style.maxHeight = '250px';
-            cardBody.appendChild(canvas);
-            resultsContainer.appendChild(colDiv);
-            var ctx = canvas.getContext('2d');
-            var chart = new Chart(ctx, {
-                type: 'pie',
-                data: {
-                    labels: ['Positive', 'Negative'],
-                    datasets: [{
-                        label: 'Prediction Percentage',
-                        data: [probability, 100 - probability],
-                        backgroundColor: ['#4CAF50', '#FF5722'],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return context.label + ': ' + context.raw + '%';
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-
-            // Calculate overall sentiment
-            totalPositive += probability;
-            totalModels++;
-        }
-    }
-
-    // Calculate overall sentiment percentage
-    var overallSentimentPercentage = totalPositive / totalModels;
-
-    // Display overall sentiment in a pie chart
-    var overallSentimentChart = document.getElementById('overallSentimentChart');
-    if (overallSentimentChart) {
-        var ctxOverall = overallSentimentChart.getContext('2d');
-        var overallChart = new Chart(ctxOverall, {
-            type: 'pie',
-            data: {
-                labels: ['Positive', 'Negative'],
-                datasets: [{
-                    label: 'Overall Sentiment',
-                    data: [overallSentimentPercentage, 100 - overallSentimentPercentage],
-                    backgroundColor: ['#4CAF50', '#FF5722'],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                return context.label + ': ' + context.raw.toFixed(2) + '%';
-                            }
-                        }
-                    }
-                }
+                });
             }
-        });
-    }
-}
-
+        }
     </script>
 </body>
 </html>
