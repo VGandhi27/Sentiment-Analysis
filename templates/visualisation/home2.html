@@ -46,7 +46,6 @@
     <script src="https://kit.fontawesome.com/a076d05399.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        let overallChart;
         document.getElementById('sentiment-form').addEventListener('submit', function(event) {
             event.preventDefault();
             var formData = new FormData(this);
@@ -86,7 +85,7 @@
                     var sentiment = data[`${modelPrefix}_sentiment`];
                     var probability = data[`${modelPrefix}_probability`][1];  // Extract positive sentiment probability
 
-                    // Display individual model predictions
+                    // Display individual model predictions (similar to your existing code)
                     var colDiv = document.createElement('div');
                     colDiv.className = 'col-lg-6 mb-4';
                     var cardDiv = document.createElement('div');
@@ -109,7 +108,7 @@
                     cardBody.appendChild(canvas);
                     resultsContainer.appendChild(colDiv);
                     var ctx = canvas.getContext('2d');
-                    new Chart(ctx, {
+                    var chart = new Chart(ctx, {
                         type: 'pie',
                         data: {
                             labels: ['Positive', 'Negative'],
@@ -148,10 +147,7 @@
             var overallSentimentChart = document.getElementById('overallSentimentChart');
             if (overallSentimentChart) {
                 var ctxOverall = overallSentimentChart.getContext('2d');
-                if (overallChart) {
-                    overallChart.destroy();  // Destroy previous chart instance
-                }
-                overallChart = new Chart(ctxOverall, {
+                var overallChart = new Chart(ctxOverall, {
                     type: 'pie',
                     data: {
                         labels: ['Positive', 'Negative'],

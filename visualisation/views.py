@@ -37,6 +37,7 @@ def predict_sentiment(text, model):
 def sentiment_analysis_view(request):
     if request.method == 'POST':
         user_input = request.POST.get('user_input', '')
+        
         results = {}
 
         for model_name, model in models.items():
@@ -45,6 +46,7 @@ def sentiment_analysis_view(request):
             results[f'{model_name}_probability'] = probability
             results[f'{model_name}_sentiment'] = sentiment
 
+        print(f'user_input---{user_input},results--{results}')
         return JsonResponse(results)
 
     # Handle GET or other methods gracefully
