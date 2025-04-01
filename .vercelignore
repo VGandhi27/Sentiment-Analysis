@@ -1,0 +1,8 @@
+__pycache__/
+*.log
+*.csv
+*.pdf
+*.json
+*.h5
+node_modules/
+venv/
