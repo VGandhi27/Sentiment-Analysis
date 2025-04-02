@@ -1,6 +1,7 @@
 # 📊 Sentiment Analysis Dashboard
 
-![Dashboard Screenshot](https://github.com/VGandhi27/Sentiment-Analysis/blob/master/Screenshot%202025-04-01%20223946.png)
+![Dashboard Screenshot](https://github.com/user-attachments/assets/b03e7409-706f-459c-9ee0-94dc0d3cd525)
+
 
 🚀 **Live Demo:** [Sentiment Analysis](https://sentiment-analysis-1-r0ao.onrender.com)
 
@@ -74,10 +75,12 @@ The **Sentiment Analysis Dashboard** is a web-based application designed to dete
 ## 📷 Screenshots
 
 ### ➤ **User Interface**
-![UI Screenshot](https://github.com/VGandhi27/Sentiment-Analysis/blob/master/Screenshot%202025-04-01%20223955.png)
+![UI Screenshot](https://github.com/user-attachments/assets/89837d3b-a065-4dc0-8c14-a0edb1a98c07)
+
 
 ### ➤ **Model Predictions Visualization**
-![Model Predictions](https://github.com/VGandhi27/Sentiment-Analysis/blob/master/Screenshot%202025-04-01%20224004.png)
+![Model Predictions](https://github.com/user-attachments/assets/aeb7a0f2-77d0-44cd-b485-091d755b16b5)
+
 
 ---
 
