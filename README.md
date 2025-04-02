@@ -6,7 +6,7 @@ I've reviewed the provided project report and have incorporated additional detai
 
 ![Dashboard Screenshot](https://github.com/VGandhi27/Sentiment-Analysis/blob/master/Screenshot%202025-04-01%20223946.png)
 
-🚀 **Live Demo:** *[Deployment Pending]*
+🚀 **Live Demo:** [Sentiment Analysis](https://sentiment-analysis-1-r0ao.onrender.com)
 
 📄 **Research Paper:** [SVM-Based Framework for Sentiment Analysis](https://ijcmps.mstrust.in/Files/Vol/Issue/ijcmps-6-1-1.pdf)
 
