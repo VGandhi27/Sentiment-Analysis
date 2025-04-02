@@ -1,7 +1,3 @@
-I've reviewed the provided project report and have incorporated additional details to enhance the README for your **Sentiment Analysis Dashboard** project.
-
----
-
 # 📊 Sentiment Analysis Dashboard
 
 ![Dashboard Screenshot](https://github.com/VGandhi27/Sentiment-Analysis/blob/master/Screenshot%202025-04-01%20223946.png)
